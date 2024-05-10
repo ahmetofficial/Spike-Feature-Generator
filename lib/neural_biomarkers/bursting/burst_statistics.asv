@@ -1,0 +1,125 @@
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%% DESCRIPTION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% The function calculates the burst characteristics of current neuron. It
+% provides values for following characteristics:
+%
+% intra_burst_freq : the average frequency of the neuron in burst period 
+% inter_burst_int  : the average duration between burst activities
+% burst_int        : the average duration of the burst period
+% burst_avg_spikes : average spike count in burst period.
+%
+%% %%%%%%%%%%%%%%%%%%%%%%%%% INPUT PARAMETERS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% spiking_times   : Nx1 vector contains spiking times in seconds
+% isi             : Nx1 vector contains spiking isi values
+% time_vector     : 1xN vector contains time bins from 0 to segment lentgth
+%                   with a specific steps (bin size)
+% segment_length  : the segment length of the current 
+% ins_firing_rate : Nx1 vector represents the instantenous firing rate for
+%                   each in bins in the time vector.
+% 
+%% %%%%%%%%%%%%%%%%%%%%%%%%% OUTPUT PARAMETERS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% burst_stats     : burst_stats(1) = intra_burst_freq;
+%                   burst_stats(2) = inter_burst_int;
+%                   burst_stats(3) = burst_int;
+%                   burst_stats(4) = burst_avg_spikes;
+%                   burst_stats(5) = burst_index;
+%                   burst_stats(6) = bursting_spike_proportion;
+%
+function [burst_stats, burst_plot] = burst_statistics(spiking_times, isi, time_vector,...
+                                                      segment_length, ins_firing_rate)
+                                      
+    %----------------------------------------------------------------------
+    % FIND BURSTING REGIONS -----------------------------------------------
+    %----------------------------------------------------------------------
+    
+    burst_limit = prctile(isi, 75); % the max isi value for bursting
+    burst_alpha = -log(0.01);       % significance level
+    
+    [burst_RS, burst_spike_count, burst_start_spike] = ...
+        burst(spiking_times, burst_limit, burst_alpha);
+    
+    %----------------------------------------------------------------------
+    % FIND BURSTING CHARACTERISTICS ---------------------------------------
+    %----------------------------------------------------------------------
+    
+    if(isempty(burst_RS) == 1) % no burst activity detected
+        burst_stats(1)    = 0;
+        burst_stats(2)    = 0;
+        burst_stats(3)    = 0;
+        burst_stats(4)    = 0;
+        burst_stats(5)    = 0;
+        burst_stats(6)    = 0;
+    else                      % burst activity detected
+        bin_size          = time_vector(2) - time_vector(1);
+        % finding timings of initial spike locations of each burst activity
+        burst_start_time  = spiking_times(burst_start_spike);    
+        % finding timings of final spike locations of each burst activity
+        burst_finish_time = spiking_times(int32(burst_start_spike) + int32(burst_spike_count) - 1);
+        % burst durations
+        burst_durations   = burst_finish_time - burst_start_time;
+        % burst count
+        burst_count       = length(burst_durations);
+        
+        %------------------------------------------------------------------
+        % Mean Intra Burst Frequency --------------------------------------
+        intra_burst_freq  = sum(burst_spike_count ./ burst_durations') / burst_count; 
+        
+        %------------------------------------------------------------------
+        % Mean Inter Burst Interval ---------------------------------------
+        if(burst_start_time(1) ~= 0 && burst_finish_time(end) ~= segment_length)
+            inter_burst_int = (segment_length - sum(burst_durations)) / (burst_count + 2);
+        elseif(burst_start_time(1) ~= 0 || burst_finish_time(end) ~= segment_length)
+            inter_burst_int = (segment_length - sum(burst_durations)) / (burst_count + 1);
+        else
+            inter_burst_int = (segment_length - sum(burst_durations)) / burst_count;
+        end
+        
+        %------------------------------------------------------------------
+        % Mean Burst Interval ---------------------------------------------
+        burst_int         = sum(burst_durations) / length(burst_durations);
+        
+        %------------------------------------------------------------------
+        % Burst Average Spikes --------------------------------------------
+        burst_avg_spikes  = sum(burst_spike_count) / length(burst_spike_count);
+        
+        %------------------------------------------------------------------
+        % Burst Index -----------------------------------------------------
+        burst_index       = mean(isi) / mode(isi);  % burst index  
+        
+        %------------------------------------------------------------------
+        % Bursting Spike Proporting in All Spikes -------------------------
+        bursting_spike_proportion = sum(burst_spike_count) / sum(spiking_times);  
+
+        burst_stats(1)    = intra_burst_freq;
+        burst_stats(2)    = inter_burst_int;
+        burst_stats(3)    = burst_int;
+        burst_stats(4)    = burst_avg_spikes;
+        burst_stats(5)    = burst_index;
+        burst_stats(6)    = bursting_spike_proportion;
+        burst_stats(7)    = burst_count;
+
+        %----------------------------------------------------------------------
+        % PLOTTING ------------------------------------------------------------
+        %----------------------------------------------------------------------
+
+        time_burst        = zeros(1,length(time_vector));       % time bins of bursting (binary)
+        for b_index       = 1:length(burst_start_spike)
+            time_burst    = time_burst + (time_vector >= burst_start_time(b_index)-bin_size) .* ...
+                                         (time_vector <= burst_finish_time(b_index));
+        end
+        burst_freq        = time_burst .* ins_firing_rate';     % the frequencies while bursting
+        time_burst_sec    = time_vector .* time_burst;          % time bins of bursting (sec)
+        
+        burst_plot.time_burst_sec    = time_burst_sec;
+        burst_plot.burst_freq        = burst_freq;
+        burst_plot.burst_start_time  = burst_start_time;
+        burst_plot.burst_finish_time = burst_finish_time;
+        burst_plot.burst_RS          = burst_RS;
+    end
+
+end
+
+
+

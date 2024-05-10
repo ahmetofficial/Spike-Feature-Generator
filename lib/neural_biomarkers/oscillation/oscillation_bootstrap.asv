@@ -1,0 +1,120 @@
+% spike_times    = array contains time of spikes in seconds
+% segment_length = double value represents the recording time in seconds
+% fs             = sampling frequency
+
+function oscillations = oscillation_bootstrap(spike_times, segment_length, fs)
+
+    segment_length = segment_length * 1000; % second to millisecond
+    segment_length = int32(segmet)
+    spike_count    = length(spike_times);
+
+    spike_times    = spike_times * 1000; % second to millisecond
+    spike_times    = int32(spike_times);
+    spike_times    = {spike_times'};
+
+    [oscillation_strength_delta, CS, oscillation_frequency_delta, AC, ACWP, S] = OScoreSpikes(spike_times, segment_length, 1, 4, fs);
+    [oscillation_strength_theta, CS, oscillation_frequency_theta, AC, ACWP, S] = OScoreSpikes(spike_times, segment_length, 4, 8, fs);
+    [oscillation_strength_alpha, CS, oscillation_frequency_alpha, AC, ACWP, S] = OScoreSpikes(spike_times, segment_length, 8, 12, fs);
+    [oscillation_strength_beta , CS, oscillation_frequency_beta , AC, ACWP, S] = OScoreSpikes(spike_times, segment_length, 13, 30, fs);
+    [oscillation_strength_gamma, CS, oscillation_frequency_gamma, AC, ACWP, S] = OScoreSpikes(spike_times, segment_length, 30, 100, fs);
+    
+    bootstrap       = spike_train_with_refractory_period(spike_count,segment_length);
+    % bootstrap       = randi([1 segment_length], 100, spike_count);
+    
+    null_dist_delta = [];
+    null_dist_theta = [];
+    null_dist_alpha = [];
+    null_dist_beta  = [];
+    null_dist_gamma = [];
+    
+    for i=1:length(bootstrap(:,1))
+    
+        spike_train                     = {int32(sort(bootstrap(i,:)))};
+        try
+            [os_btsrp_delta, a, b, c, d, e] = OScoreSpikes(spike_train, segment_length, 1, 4, fs);
+        catch
+            os_btsrp_delta = 1;
+        end
+
+        try
+            [os_btsrp_theta, a, b, c, d, e] = OScoreSpikes(spike_train, segment_length, 4, 8, fs);
+        catch
+            os_btsrp_theta = 1;
+        end
+        
+        try
+            [os_btsrp_alpha, a, b, c, d, e] = OScoreSpikes(spike_train, segment_length, 8, 12, fs);
+        catch
+            os_btsrp_alpha = 1;
+        end
+
+        try
+            [os_btsrp_beta , a, b, c, d, e] = OScoreSpikes(spike_train, segment_length, 12, 30, fs);
+        catch
+            os_btsrp_beta = 1;
+        end
+        try
+            [os_btsrp_gamma, a, b, c, d, e] = OScoreSpikes(spike_train, segment_length, 30, 100, fs);
+        catch
+            os_btsrp_gamma = 1;
+        end
+
+        null_dist_delta                 = [null_dist_delta, os_btsrp_delta];
+        null_dist_theta                 = [null_dist_theta, os_btsrp_theta];
+        null_dist_alpha                 = [null_dist_alpha, os_btsrp_alpha];
+        null_dist_beta                  = [null_dist_beta , os_btsrp_beta];
+        null_dist_gamma                 = [null_dist_gamma, os_btsrp_gamma];
+
+    end
+    
+    null_dist_delta = sort(null_dist_delta);
+    null_dist_theta = sort(null_dist_theta);
+    null_dist_alpha = sort(null_dist_alpha);
+    null_dist_beta  = sort(null_dist_beta);
+    null_dist_gamma = sort(null_dist_gamma);
+    
+    threshold_delta = prctile(null_dist_delta,95);
+    threshold_theta = prctile(null_dist_theta,95);
+    threshold_alpha = prctile(null_dist_alpha,95);
+    threshold_beta  = prctile(null_dist_beta,95);
+    threshold_gamma = prctile(null_dist_gamma,95);
+
+    oscillations    = {};
+
+    % DELTA BAND
+    if (oscillation_strength_delta >= threshold_delta)
+        oscillations.oscillation_frequency_delta = oscillation_frequency_delta;
+    else
+        oscillations.oscillation_frequency_delta = NaN;
+    end
+
+    % THETA BAND
+    if (oscillation_strength_theta >= threshold_theta)
+        oscillations.oscillation_frequency_theta = oscillation_frequency_theta;
+    else
+        oscillations.oscillation_frequency_theta = NaN;
+    end
+
+    % ALPHA BAND
+    if (oscillation_strength_alpha >= threshold_alpha) 
+        oscillations.oscillation_frequency_alpha = oscillation_frequency_alpha;
+    else
+        oscillations.oscillation_frequency_alpha = NaN;
+    end
+
+    % BETA BAND
+    if (oscillation_strength_beta >= threshold_beta)
+        oscillations.oscillation_frequency_beta = oscillation_frequency_beta;
+    else
+        oscillations.oscillation_frequency_beta = NaN;
+    end
+
+    % GAMMA BAND
+    if (oscillation_strength_gamma >= threshold_gamma)
+        oscillations.oscillation_frequency_gamma = oscillation_frequency_gamma;
+    else
+        oscillations.oscillation_frequency_gamma = NaN;
+    end
+
+end
+
