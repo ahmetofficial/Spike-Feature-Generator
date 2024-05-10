@@ -222,46 +222,46 @@ function pipeline_biomarker_generation_single_patient(base_directory, patient_co
                 % SUA PLOTS -------------------------------------------------------
                 % -------------------------------------------------------------
 
-%                 acf_path_name     = strcat(analy_directory, '\', file_name_we, '_', neuron_name, '_ACF.png');
-%                 isiprob_path_name = strcat(analy_directory, '\', file_name_we, '_', neuron_name, '_ISIPROB.png');
-%                 raster_path_name  = strcat(analy_directory, '\', file_name_we, '_', neuron_name, '_raster.png');
-%                 ifr_path_name     = strcat(analy_directory, '\', file_name_we, '_', neuron_name, '_IFR.png');
-%                 ks_path_name      = strcat(analy_directory, '\', file_name_we, '_', neuron_name, '_KS.png');
-% 
-%                 % instantaneuos firing rate, neural pause and bursting plot
-%                 %firing_rate_plot(spike_train', time_vector, bin_size, ins_firing_rate, spiking_times, pause_stats, burst_plot, burst_count);
-% 
-%                 % raster plot
-%                 rp_figure = raster_plot(spike_train', time_vector, bin_size);    
-%                 saveas(gcf, raster_path_name);
-%                 hold off;
-% 
-%                 % firing rate plot
-%                 fr_figure = figure(50);
-%                 saveas(gcf, ifr_path_name);
-% 
-%                 % Kolmogorov-Smirnov plot
-%                 [h, ks_figure] = kolmogorov_smirnov_test(isi_pdf, isi_probs, length(isi));     
-%                 saveas(gcf, ks_path_name);
-%                 hold off;
-% 
-%                 % isi probability plot
-%                 figure; bar(bin_centers, isi_probs.*100 , 'b');
-%                 hold on;
-%                 plot(bin_centers, isi_pdf, 'LineWidth', 2 , 'color', 'r');
-%                 xlabel("ISI [second]"); ylabel("probability [percentage]"); 
-%                 title(strcat("ISI Probabilities (bin size ", string(bin_size), " seconds)"));
-%                 legend('ISI bins', strcat('Fitted Gamma Distribution (shape:', string(shape_param),...
-%                                           ' | scale:', string(scale_param),')'));
-%                 saveas(gcf, isiprob_path_name);
-%                 hold off;
-% 
-%                 % acf of spike train            
-%                 stem(lags, acf, 'MarkerSize', 2)
-%                 xlabel("time [seconds]"); ylabel("autocorrelation");
-%                 title(strcat("Autocorrelogram (bin size ", string(bin_size), " seconds)"));
-%                 saveas(gcf, acf_path_name);
-%                 close all; 
+                acf_path_name     = strcat(analy_directory, '\', file_name_we, '_', neuron_name, '_ACF.png');
+                isiprob_path_name = strcat(analy_directory, '\', file_name_we, '_', neuron_name, '_ISIPROB.png');
+                raster_path_name  = strcat(analy_directory, '\', file_name_we, '_', neuron_name, '_raster.png');
+                ifr_path_name     = strcat(analy_directory, '\', file_name_we, '_', neuron_name, '_IFR.png');
+                ks_path_name      = strcat(analy_directory, '\', file_name_we, '_', neuron_name, '_KS.png');
+
+                % instantaneuos firing rate, neural pause and bursting plot
+                %firing_rate_plot(spike_train', time_vector, bin_size, ins_firing_rate, spiking_times, pause_stats, burst_plot, burst_count);
+
+                % raster plot
+                rp_figure = raster_plot(spike_train', time_vector, bin_size);    
+                saveas(gcf, raster_path_name);
+                hold off;
+
+                % firing rate plot
+                fr_figure = figure(50);
+                saveas(gcf, ifr_path_name);
+
+                % Kolmogorov-Smirnov plot
+                [h, ks_figure] = kolmogorov_smirnov_test(isi_pdf, isi_probs, length(isi));     
+                saveas(gcf, ks_path_name);
+                hold off;
+
+                % isi probability plot
+                figure; bar(bin_centers, isi_probs.*100 , 'b');
+                hold on;
+                plot(bin_centers, isi_pdf, 'LineWidth', 2 , 'color', 'r');
+                xlabel("ISI [second]"); ylabel("probability [percentage]"); 
+                title(strcat("ISI Probabilities (bin size ", string(bin_size), " seconds)"));
+                legend('ISI bins', strcat('Fitted Gamma Distribution (shape:', string(shape_param),...
+                                          ' | scale:', string(scale_param),')'));
+                saveas(gcf, isiprob_path_name);
+                hold off;
+
+                % acf of spike train            
+                stem(lags, acf, 'MarkerSize', 2)
+                xlabel("time [seconds]"); ylabel("autocorrelation");
+                title(strcat("Autocorrelogram (bin size ", string(bin_size), " seconds)"));
+                saveas(gcf, acf_path_name);
+                close all; 
 
                 % -------------------------------------------------------------
                 % SAVING STATISTICS -------------------------------------------
@@ -335,11 +335,11 @@ function pipeline_biomarker_generation_single_patient(base_directory, patient_co
                                      inter_burst_int, ...                           % mean inter-bursting duration
                                      intra_burst_freq, ...                          % mean bursting frequency
                                      burst_count, ...                               % number of bursts
-                                     %pause_stats.mean_intra_pause_frequency,...     % mean pause frequency
-                                     %pause_stats.mean_pause_duration,...            % mean pause duration
-                                     %pause_stats.proportion_time_in_pauses,...      % pause proportion in time
-                                     %pause_stats.proportion_spikes_in_pauses,...    % pause proportion of spikes
-                                     %pause_stats.num_pauses,...                     % number of pauses
+                                     pause_stats.mean_intra_pause_frequency,...     % mean pause frequency
+                                     pause_stats.mean_pause_duration,...            % mean pause duration
+                                     pause_stats.proportion_time_in_pauses,...      % pause proportion in time
+                                     pause_stats.proportion_spikes_in_pauses,...    % pause proportion of spikes
+                                     pause_stats.num_pauses,...                     % number of pauses
                                      oscillation_stats.oscillation_frequency_theta, ...
                                      oscillation_stats.oscillation_frequency_alpha, ...
                                      oscillation_stats.oscillation_frequency_beta, ...
@@ -362,7 +362,7 @@ function pipeline_biomarker_generation_single_patient(base_directory, patient_co
                 'isi_std', 'isi_skewness', 'isi_rho', 'pause_index', 'pause_ratio', 'asymmetry_index', ...
                 'amplitude_std', 'amplitude_skewness', 'amplitude_kurtosis', 'AMBD', 'AAMBD', 'PreSPV', 'PostSPV', ...
                 'burst_index', 'burst_avg_spikes','bspike_proportion', 'burst_int', 'inter_burst_int', 'burst_freq', 'burst_count'...
-                %'pause_freq', 'pause_duration', 'pause_time_proportion', 'pause_spike_proportion', 'pause_count',...
+                'pause_freq', 'pause_duration', 'pause_time_proportion', 'pause_spike_proportion', 'pause_count',...
                 'oscillation_frequency_theta_band', 'oscillation_frequency_alpha_band',... 
                 'oscillation_frequency_beta_band', 'oscillation_frequency_gamma_band', ... 
                 'coherence_theta_band', 'coherence_frequency_theta_band',...
