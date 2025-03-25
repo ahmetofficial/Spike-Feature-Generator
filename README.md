@@ -80,10 +80,10 @@ Following neural pause metrics were generated:
 
 ## Research Papers Utilizing the Toolbox
 
-- [Spiking Patterns in the Globus Pallidus Highlight Convergent Neural Dynamics across Diverse Genetic Dystonia Syndromes](https://doi.org/10.1002/ana.27185), Annals of Neurology - 2025
-- [Illustration of the long-term efficacy of pallidal deep brain stimulation in a patient with PKAN dystonia](https://doi.org/10.1016/j.parkreldis.2024.106977), Parkinsonism & Related Disorders - 2024
-- [A novel GNAL pathogenic variant leading to generalized dystonia: Immediate and sustained response to globus pallidus internus deep brain stimulation](https://doi.org/10.1016/j.parkreldis.2023.105833), Parkinsonism & Related Disorders - 2023
-- [Patterns of neural activity and clinical outcomes in a juvenile Huntington's Disease patient undergoing Deep Brain Stimulation of the subthalamic nucleus](https://doi.org/10.1016/j.jdbs.2023.03.001), Deep Brain Stimulation - 2023
+- [Spiking Patterns in the Globus Pallidus Highlight Convergent Neural Dynamics across Diverse Genetic Dystonia Syndromes](https://doi.org/10.1002/ana.27185), Annals of Neurology, 2025
+- [Illustration of the long-term efficacy of pallidal deep brain stimulation in a patient with PKAN dystonia](https://doi.org/10.1016/j.parkreldis.2024.106977), Parkinsonism & Related Disorders, 2024
+- [A novel GNAL pathogenic variant leading to generalized dystonia: Immediate and sustained response to globus pallidus internus deep brain stimulation](https://doi.org/10.1016/j.parkreldis.2023.105833), Parkinsonism & Related Disorders, 2023
+- [Patterns of neural activity and clinical outcomes in a juvenile Huntington's Disease patient undergoing Deep Brain Stimulation of the subthalamic nucleus](https://doi.org/10.1016/j.jdbs.2023.03.001), Deep Brain Stimulation, 2023
 
 
 
